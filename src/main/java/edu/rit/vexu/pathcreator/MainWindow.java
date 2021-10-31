@@ -1,5 +1,6 @@
 package edu.rit.vexu.pathcreator;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
@@ -12,7 +13,7 @@ import java.net.URISyntaxException;
 public class MainWindow {
 
     @FXML
-    private ListView<String> listView;
+    private ListView<String> pointList;
 
     @FXML
     private SplitPane splitPane;
