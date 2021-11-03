@@ -1,1 +1,1 @@
-mvn clean compile javafx:jlink jpackage:jpackage
+mvn clean compile javafx:jlink jpackage:jpackage -X
