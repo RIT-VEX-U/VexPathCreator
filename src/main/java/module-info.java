@@ -1,4 +1,4 @@
-module com.example.demo {
+module edu.rit.vexu.pathcreator {
     requires javafx.controls;
     requires javafx.fxml;
 

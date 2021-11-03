@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example</groupId>
-    <artifactId>demo</artifactId>
+    <groupId>edu.rit.vexu.pathcreator</groupId>
+    <artifactId>VexPathCreator</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>demo</name>
+    <name>VexPathCreator</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,6 +38,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.akman</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>0.1.3</version>
+            <type>maven-plugin</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -60,10 +66,25 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.demo/edu.rit.vexu.pathcreator.VexPathCreator</mainClass>
+                            <launcher>edu.rit.vexu.pathcreator</launcher>
+                            <mainClass>edu.rit.vexu.pathcreator.VexPathCreator</mainClass>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.akman</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>0.1.3</version>
+                <configuration>
+                    <name>Vex Path Creator</name>
+                    <type>IMAGE</type>
+                    <toolhome>${env.JAVA_HOME}\bin</toolhome>
+                    <dest>${project.build.directory}/jpackage</dest>
+                    <runtimeimage>${project.build.directory}/image</runtimeimage>
+                    <module>edu.rit.vexu.pathcreator/edu.rit.vexu.pathcreator.VexPathCreator</module>
+                    <!-- put your configurations here -->
+                </configuration>
             </plugin>
         </plugins>
     </build>
