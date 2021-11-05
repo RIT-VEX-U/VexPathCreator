@@ -6,7 +6,7 @@
 
 <SplitPane fx:id="splitPane" dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.rit.vexu.pathcreator.MainWindow">
      <items>
-         <AnchorPane maxWidth="300.0" minHeight="0.0" minWidth="200.0" prefHeight="160.0" prefWidth="200.0">
+         <AnchorPane maxWidth="325.0" minHeight="0.0" minWidth="275.0" prefHeight="160.0" prefWidth="275.0">
              <children>
             <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <menus>
@@ -25,8 +25,10 @@
             </MenuBar>
                  <ToolBar layoutY="4.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                      <items>
-                         <Button mnemonicParsing="false" text="Add Point" />
-                         <Button mnemonicParsing="false" text="Add Path" />
+                         <Button fx:id="addPtBtn" mnemonicParsing="false" text="Add Point" />
+                         <Button fx:id="addPathBtn" mnemonicParsing="false" text="Add Path" />
+                  <Button mnemonicParsing="false" text="▲" />
+                  <Button mnemonicParsing="false" text="▼" />
                      </items>
                  </ToolBar>
                  <ListView fx:id="pointList" layoutY="43.0" prefHeight="355.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0" />

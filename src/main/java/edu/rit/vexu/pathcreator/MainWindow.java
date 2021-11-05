@@ -1,19 +1,24 @@
 package edu.rit.vexu.pathcreator;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SplitPane;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 public class MainWindow {
 
     @FXML
-    private ListView<String> pointList;
+    private ListView<Node> pointList;
 
     @FXML
     private SplitPane splitPane;
@@ -23,6 +28,14 @@ public class MainWindow {
 
     @FXML
     private AnchorPane imagePane;
+
+    @FXML
+    private Button addPtBtn;
+
+    @FXML
+    private Button addPathBtn;
+
+    private int numListItems = 0;
 
     @FXML
     /**
@@ -44,6 +57,23 @@ public class MainWindow {
         imagePane.widthProperty().addListener((observableValue, number, t1) -> centerFieldImage());
         imagePane.heightProperty().addListener((observableValue, number, t1) -> centerFieldImage());
 
+
+        ObservableList<Node> list = FXCollections.observableArrayList();
+        pointList.setItems(list);
+
+        // Whenever a new point is created, add it to the list and handle the "remove" button correctly
+        addPtBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            PointItem pItem = new PointItem(++numListItems);
+            pItem.setDeleteHandler(event -> list.remove(pItem));
+            list.add(pItem);
+        });
+
+        // Create a new path, and handle the "remove path" button for each one
+        addPathBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            PathItem pItem = new PathItem();
+            pItem.setDeleteHandler(event -> list.remove(pItem));
+            list.add(pItem);
+        });
     }
 
     /**
