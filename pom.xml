@@ -78,6 +78,8 @@
                 <version>0.1.3</version>
                 <configuration>
                     <name>Vex Path Creator</name>
+                    <icon>${project.basedir}\logo.ico</icon>
+                    <appversion>0.1</appversion>
                     <type>EXE</type>
                     <installdir>RITVEXU/Vex Path Creator</installdir>
                     <winmenu>true</winmenu>
