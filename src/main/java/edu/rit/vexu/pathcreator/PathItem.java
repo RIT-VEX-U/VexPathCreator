@@ -1,16 +1,9 @@
 package edu.rit.vexu.pathcreator;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.control.skin.TextInputControlSkin;
-import javafx.scene.effect.Light;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-
-import javax.security.auth.callback.Callback;
 
 /**
  * PathItem

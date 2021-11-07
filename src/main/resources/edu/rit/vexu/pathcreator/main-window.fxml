@@ -14,7 +14,8 @@
                      <items>
                         <MenuItem mnemonicParsing="false" text="Save" />
                         <MenuItem mnemonicParsing="false" text="Save As" />
-                        <MenuItem mnemonicParsing="false" text="Open" />
+                        <MenuItem mnemonicParsing="false" text="Open Path" />
+                        <MenuItem fx:id="openFieldMenuItem" mnemonicParsing="false" text="Open Field" />
                      </items></Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                   <items>
@@ -38,7 +39,7 @@
              <children>
                  <ImageView fx:id="imageView" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                         <Image url="@tipping_pt.png" />
+<!--                         <Image url="@tipping_pt.png" />-->
                      </image>
                  </ImageView>
                  <VBox prefHeight="200.0" prefWidth="100.0" />

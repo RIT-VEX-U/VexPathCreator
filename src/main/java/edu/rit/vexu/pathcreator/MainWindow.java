@@ -1,24 +1,32 @@
 package edu.rit.vexu.pathcreator;
 
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 
 public class MainWindow {
 
     // WINDOW
     @FXML private SplitPane splitPane;
+
+    // MENU BAR
+    @FXML private MenuItem openFieldMenuItem;
 
     // LEFT PANE
     @FXML private ListView<Node> pointList;
@@ -37,7 +45,7 @@ public class MainWindow {
      * Create the window.
      * Anchor the split plane to the window, and auto-resize and auto-center the image to the right-side pane
      */
-    @FXML private void initialize() throws URISyntaxException {
+    @FXML private void initialize() {
 
         AnchorPane.setTopAnchor(splitPane, 0.0);
         AnchorPane.setBottomAnchor(splitPane, 0.0);
@@ -55,6 +63,14 @@ public class MainWindow {
 
         ObservableList<Node> list = FXCollections.observableArrayList();
         pointList.setItems(list);
+
+        // Set up the image of the field,
+        // Set the FieldImage class to automatically update the image when a new one is chosen
+        imageView.setImage(FieldConfig.fieldImage);
+        FieldConfig.setUpdateImageCallback( image -> {
+            imageView.setImage(image);
+            centerFieldImage();
+        });
 
         // Whenever a new point is created, add it to the list and handle the "remove" button correctly
         addPtBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
@@ -111,6 +127,16 @@ public class MainWindow {
             pointList.getSelectionModel().select(selectedIndex + 1);
         });
 
+        // Open a new field image with options to set the width / length
+        openFieldMenuItem.addEventHandler(ActionEvent.ACTION, actionEvent -> {
+            try {
+                Stage fieldConfigStage = new Stage();
+                fieldConfigStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("field-config.fxml"))));
+                fieldConfigStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
