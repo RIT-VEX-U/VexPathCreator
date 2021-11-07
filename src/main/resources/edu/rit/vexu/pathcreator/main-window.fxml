@@ -27,8 +27,8 @@
                      <items>
                          <Button fx:id="addPtBtn" mnemonicParsing="false" text="Add Point" />
                          <Button fx:id="addPathBtn" mnemonicParsing="false" text="Add Path" />
-                  <Button mnemonicParsing="false" text="▲" />
-                  <Button mnemonicParsing="false" text="▼" />
+                  <Button fx:id="upIndexButton" mnemonicParsing="false" text="▲" />
+                  <Button fx:id="downIndexButton" mnemonicParsing="false" text="▼" />
                      </items>
                  </ToolBar>
                  <ListView fx:id="pointList" layoutY="43.0" prefHeight="355.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0" />

@@ -17,32 +17,27 @@ import java.nio.file.Path;
 
 public class MainWindow {
 
-    @FXML
-    private ListView<Node> pointList;
+    // WINDOW
+    @FXML private SplitPane splitPane;
 
-    @FXML
-    private SplitPane splitPane;
+    // LEFT PANE
+    @FXML private ListView<Node> pointList;
+    @FXML private Button addPtBtn;
+    @FXML private Button addPathBtn;
+    @FXML private Button upIndexButton;
+    @FXML private Button downIndexButton;
 
-    @FXML
-    private ImageView imageView;
-
-    @FXML
-    private AnchorPane imagePane;
-
-    @FXML
-    private Button addPtBtn;
-
-    @FXML
-    private Button addPathBtn;
+    // RIGHT PANE
+    @FXML private AnchorPane imagePane;
+    @FXML private ImageView imageView;
 
     private int numListItems = 0;
 
-    @FXML
     /**
      * Create the window.
      * Anchor the split plane to the window, and auto-resize and auto-center the image to the right-side pane
      */
-    private void initialize() throws URISyntaxException {
+    @FXML private void initialize() throws URISyntaxException {
 
         AnchorPane.setTopAnchor(splitPane, 0.0);
         AnchorPane.setBottomAnchor(splitPane, 0.0);
@@ -72,8 +67,51 @@ public class MainWindow {
         addPathBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             PathItem pItem = new PathItem();
             pItem.setDeleteHandler(event -> list.remove(pItem));
+            pItem.setSelectedHandler(event -> pointList.getSelectionModel().select(pItem));
             list.add(pItem);
         });
+
+        // When the "up" button is pressed, move the item in the list up, and keep it selected.
+        // If nothing is selected, then do nothing.
+        upIndexButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            int selectedIndex = pointList.getSelectionModel().getSelectedIndex();
+            if(selectedIndex == -1 || selectedIndex == 0)
+                return;
+
+            // If the item selected is a Path, and the point inside the path are selected,
+            // then move the path points around
+            if(pointList.getSelectionModel().getSelectedItem() instanceof PathItem)
+            {
+                PathItem pItem = (PathItem) pointList.getSelectionModel().getSelectedItem();
+                if(pItem.moveSelectedHermitePoint(PathItem.Direction.UP))
+                    return;
+            }
+
+            list.add(selectedIndex - 1, list.remove(selectedIndex));
+            pointList.getSelectionModel().select(selectedIndex - 1);
+        });
+
+        // When the "down" button is pressed, move the item in the list down, and keep it selected.
+        // If nothing is selected, then do nothing.
+        downIndexButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            int selectedIndex = pointList.getSelectionModel().getSelectedIndex();
+            if(selectedIndex == -1 || selectedIndex == (list.size() - 1))
+                return;
+
+            // If the item selected is a Path, and the point inside the path are selected,
+            // then move the path points around
+            if(pointList.getSelectionModel().getSelectedItem() instanceof PathItem)
+            {
+                PathItem pItem = (PathItem) pointList.getSelectionModel().getSelectedItem();
+                if(pItem.moveSelectedHermitePoint(PathItem.Direction.DOWN))
+                    return;
+            }
+
+            list.add(selectedIndex + 1, list.remove(selectedIndex));
+            pointList.getSelectionModel().select(selectedIndex + 1);
+        });
+
+
     }
 
     /**

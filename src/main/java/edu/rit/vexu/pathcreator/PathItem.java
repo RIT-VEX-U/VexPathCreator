@@ -2,8 +2,10 @@ package edu.rit.vexu.pathcreator;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.TextInputControlSkin;
 import javafx.scene.effect.Light;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -29,6 +31,8 @@ public class PathItem extends VBox {
 //    private Spinner<Integer> orderSpinner;
 
     private int numHermitePoints = 0;
+
+    public enum Direction { UP, DOWN }
 
     /**
      * Create the list item
@@ -109,4 +113,50 @@ public class PathItem extends VBox {
     {
         this.rmPathBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e);
     }
+
+    /**
+     * Add an external handler for whenever the list is clicked, so the "selected" property updates
+     * in the main point list window
+     * @param e Event callback
+     */
+    public void setSelectedHandler(EventHandler e)
+    {
+        view.addEventHandler(MouseEvent.MOUSE_CLICKED, e);
+    }
+
+    /**
+     * Checks if any hermite points are selected, and moves them up or down in the viewable list.
+     * @param dir The direction; UP or DOWN
+     * @return true if successful, false if nothing was selected OR the operation failed
+     */
+    public boolean moveSelectedHermitePoint(Direction dir)
+    {
+        int selectedIndex = view.getSelectionModel().getSelectedIndex();
+        Object selectedItem = view.getSelectionModel().getSelectedItem();
+
+        // The selected index is 1 greater than the root selected index, since the root doesn't include the drop-down item.
+        // Use the selected index for telling what's selected, and the root selected index for manipulating the children
+        int rootSelectedIndex = -1;
+        for (int i = 0; i < root.getChildren().size(); i++)
+            if(selectedItem == root.getChildren().get(i))
+                rootSelectedIndex = i;
+
+        // If the "selected item" is the root, "add point" button, or something else, then don't try to move it
+        if((selectedIndex >= -1 && selectedIndex <= 1) || rootSelectedIndex >= root.getChildren().size() || rootSelectedIndex == -1)
+            return false;
+
+        if (dir == Direction.UP && rootSelectedIndex > 1)
+        {
+            root.getChildren().add(rootSelectedIndex - 1, root.getChildren().remove(rootSelectedIndex));
+            view.getSelectionModel().select(selectedIndex - 1);
+        }
+        else if (dir == Direction.DOWN && rootSelectedIndex < root.getChildren().size() - 1)
+        {
+            root.getChildren().add(rootSelectedIndex + 1, root.getChildren().remove(rootSelectedIndex));
+            view.getSelectionModel().select(selectedIndex + 1);
+        }
+
+        return true;
+    }
+
 }
