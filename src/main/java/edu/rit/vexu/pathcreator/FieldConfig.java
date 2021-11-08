@@ -19,11 +19,13 @@ public class FieldConfig {
 
     // Store the currently loaded field width and length for global use.
     // This will be set when loading a new field from the "File" menu
-    public static int LOADED_FIELD_LENGTH = 144;
+    public static int LOADED_FIELD_HEIGHT = 144;
     public static int LOADED_FIELD_WIDTH = 144;
 
     // Field image defaults to the current year's game
     public static Image fieldImage = null;
+    public static double fieldImageScaledHeight = 0.0;
+    public static double fieldImageScaledWidth = 0.0;
 
     // Callback that will update the ImageView when updateImage.accept(image) is run
     private static Consumer<Image> updateImage = null;
@@ -87,7 +89,7 @@ public class FieldConfig {
             }
 
             // If the numbers parsed, load them as new accepted field values
-            LOADED_FIELD_LENGTH = newLength;
+            LOADED_FIELD_HEIGHT = newLength;
             LOADED_FIELD_WIDTH = newWidth;
 
             // Load an image, and make sure the URL provided is correct

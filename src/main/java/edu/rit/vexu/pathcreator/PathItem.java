@@ -21,17 +21,19 @@ public class PathItem extends VBox {
     private TreeItem root;
     private Button rmPathBtn = new Button("X");
     private Button mkPointBtn = new Button("New Hermite Point");
-//    private Spinner<Integer> orderSpinner;
+    private AnchorPane fieldPane;
 
     private int numHermitePoints = 0;
 
     public enum Direction { UP, DOWN }
 
+
     /**
      * Create the list item
      */
-    public PathItem()
+    public PathItem(AnchorPane fieldPane)
     {
+        this.fieldPane = fieldPane;
         // Create the drop-down portion
         Region rootRgn = new Region();
         HBox.setHgrow(rootRgn, Priority.ALWAYS);
@@ -60,7 +62,7 @@ public class PathItem extends VBox {
         {
             // Create a new point, add it to the path list,
             // and control what to do when it's deleted
-            HermitePointItem hpItem = new HermitePointItem(++numHermitePoints);
+            HermitePointItem hpItem = new HermitePointItem(++numHermitePoints, fieldPane);
             TreeItem hpTreeItem = new TreeItem(hpItem);
             hpItem.setDeleteHandler(e -> {
                 root.getChildren().remove(hpTreeItem);

@@ -3,6 +3,7 @@ package edu.rit.vexu.pathcreator;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -13,9 +14,12 @@ public class HermitePointItem extends VBox {
     TextField angleField = new TextField();
     TextField magField = new TextField();
 
-    public HermitePointItem(int pathIndex)
+    private AnchorPane fieldPane;
+
+    public HermitePointItem(int pathIndex, AnchorPane fieldPane)
     {
-        pointPart = new PointItem(pathIndex);
+        this.fieldPane = fieldPane;
+        pointPart = new PointItem(pathIndex, fieldPane);
         angleField.setMaxWidth(50);
         magField.setMaxWidth(50);
 

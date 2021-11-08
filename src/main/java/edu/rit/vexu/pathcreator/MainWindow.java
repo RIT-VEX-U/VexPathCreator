@@ -1,14 +1,11 @@
 package edu.rit.vexu.pathcreator;
 
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -18,7 +15,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class MainWindow {
 
@@ -74,14 +70,14 @@ public class MainWindow {
 
         // Whenever a new point is created, add it to the list and handle the "remove" button correctly
         addPtBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
-            PointItem pItem = new PointItem(++numListItems);
+            PointItem pItem = new PointItem(++numListItems, imagePane);
             pItem.setDeleteHandler(event -> list.remove(pItem));
             list.add(pItem);
         });
 
         // Create a new path, and handle the "remove path" button for each one
         addPathBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
-            PathItem pItem = new PathItem();
+            PathItem pItem = new PathItem(imagePane);
             pItem.setDeleteHandler(event -> list.remove(pItem));
             pItem.setSelectedHandler(event -> pointList.getSelectionModel().select(pItem));
             list.add(pItem);
@@ -161,6 +157,9 @@ public class MainWindow {
         // Get the actual size of the image on our screen
         double w = i.getWidth() * reduceCoef;
         double h = i.getHeight() * reduceCoef;
+
+        FieldConfig.fieldImageScaledWidth = w;
+        FieldConfig.fieldImageScaledHeight = h;
 
         // Offset the image by taking the difference in height / width, and halving it
         imageView.setX((imageView.getFitWidth() - w) / 2.0);
