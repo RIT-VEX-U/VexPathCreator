@@ -1,9 +1,13 @@
 package edu.rit.vexu.pathcreator;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.util.Pair;
+
+import java.nio.file.Path;
 
 /**
  * PathItem
@@ -11,7 +15,7 @@ import javafx.scene.layout.*;
  * Represents a collection of points and vectors that make up a hermite curve.
  * This controls the creation of Path list items on the left-hand side of the screen
  */
-public class PathItem extends VBox {
+public class PathItem extends VBox implements PathControl {
 
     private static final double MIN_SIZE = 35;
     private static final double CHILD_SIZE = 57;
@@ -152,6 +156,21 @@ public class PathItem extends VBox {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isValid() {
+        return false;
+    }
+
+    @Override
+    public Point2D getStartPoint() {
+        return null;
+    }
+
+    @Override
+    public Point2D getEndPoint() {
+        return null;
     }
 
 }

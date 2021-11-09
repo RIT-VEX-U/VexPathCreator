@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,9 +13,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainWindow {
 
@@ -37,6 +41,8 @@ public class MainWindow {
 
     private int numListItems = 0;
 
+    ArrayList<Line> lineList = new ArrayList<>();
+
     /**
      * Create the window.
      * Anchor the split plane to the window, and auto-resize and auto-center the image to the right-side pane
@@ -56,6 +62,10 @@ public class MainWindow {
         imagePane.widthProperty().addListener((observableValue, number, t1) -> centerFieldImage());
         imagePane.heightProperty().addListener((observableValue, number, t1) -> centerFieldImage());
 
+        // Redraw the path whenever the window size changes
+        imagePane.widthProperty().addListener((observableValue, number, t1) -> drawFullPath());
+        imagePane.heightProperty().addListener((observableValue, number, t1) -> drawFullPath());
+
 
         ObservableList<Node> list = FXCollections.observableArrayList();
         pointList.setItems(list);
@@ -71,7 +81,11 @@ public class MainWindow {
         // Whenever a new point is created, add it to the list and handle the "remove" button correctly
         addPtBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             PointItem pItem = new PointItem(++numListItems, imagePane);
-            pItem.setDeleteHandler(event -> list.remove(pItem));
+            pItem.setDeleteHandler(event -> {
+                list.remove(pItem);
+                drawFullPath();
+            });
+            pItem.addChangeListener((observableValue, o, t1) -> drawFullPath());
             list.add(pItem);
         });
 
@@ -101,6 +115,7 @@ public class MainWindow {
 
             list.add(selectedIndex - 1, list.remove(selectedIndex));
             pointList.getSelectionModel().select(selectedIndex - 1);
+            drawFullPath();
         });
 
         // When the "down" button is pressed, move the item in the list down, and keep it selected.
@@ -121,6 +136,7 @@ public class MainWindow {
 
             list.add(selectedIndex + 1, list.remove(selectedIndex));
             pointList.getSelectionModel().select(selectedIndex + 1);
+            drawFullPath();
         });
 
         // Open a new field image with options to set the width / length
@@ -165,5 +181,36 @@ public class MainWindow {
         imageView.setX((imageView.getFitWidth() - w) / 2.0);
         imageView.setY((imagePane.getHeight() - h) / 2.0);
     }
+
+    private void drawFullPath()
+    {
+        for (int i = 0; i < lineList.size(); i++)
+            if(imagePane.getChildren().contains(lineList.get(i)))
+                imagePane.getChildren().remove(lineList.get(i));
+
+        lineList.clear();
+
+        for (int i = 0; i < pointList.getItems().size() - 1; i++)
+        {
+            PathControl pc1 = (PathControl) pointList.getItems().get(i);
+            PathControl pc2 = (PathControl) pointList.getItems().get(i + 1);
+
+            // If any of the points are off the field (negative)
+            if( (!pc1.isValid()) || (!pc2.isValid()) )
+                continue;
+
+            Point2D adjustedPtStart = FieldConfig.inchesToPixels(pc1.getEndPoint(), imagePane);
+            Point2D adjustedPtEnd = FieldConfig.inchesToPixels(pc2.getStartPoint(), imagePane);
+            Line l = new Line(adjustedPtStart.getX(), adjustedPtStart.getY(),
+                    adjustedPtEnd.getX(), adjustedPtEnd.getY());
+            l.strokeProperty().set(Color.DARKORANGE);
+            l.strokeWidthProperty().set(4);
+            lineList.add(l);
+        }
+
+        for (Line l : lineList)
+            imagePane.getChildren().add(l);
+    }
+    static int x = 0;
 
 }

@@ -1,9 +1,9 @@
 package edu.rit.vexu.pathcreator;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,7 +16,7 @@ import javafx.scene.shape.Circle;
  * A list item and point object on the field.
  * When created, the point will automatically check user inputs, and place a point on the map of the field.
  */
-public class PointItem extends HBox {
+public class PointItem extends HBox implements PathControl{
 
     private static final int POINT_RADIUS = 8;
 
@@ -28,6 +28,8 @@ public class PointItem extends HBox {
 
     private Circle fieldGraphic = null;
     private AnchorPane fieldPane;
+
+    private int x = -1, y=-1;
 
     /**
      * Create the point
@@ -57,7 +59,8 @@ public class PointItem extends HBox {
         // Currently, only supports integers
         ChangeListener<String> placePointListener = (v, s, t1) ->
         {
-            int x = -1, y = -1;
+            x = -1;
+            y = -1;
             boolean xValid = true, yValid = true;
 
             // Check inputs on the X textfield
@@ -116,6 +119,15 @@ public class PointItem extends HBox {
         this.delBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, e);
     }
 
+    /**
+     * Add external handles for whenever the point changes X or Y
+     * @param c Change callback
+     */
+    public void addChangeListener(ChangeListener c)
+    {
+        this.xText.textProperty().addListener(c);
+        this.yText.textProperty().addListener(c);
+    }
 
     /**
      * Place or replace a point at X and Y (inches) on the field image
@@ -128,15 +140,9 @@ public class PointItem extends HBox {
         if(fieldGraphic != null || fieldPane.getChildren().contains(fieldGraphic))
             fieldPane.getChildren().remove(fieldGraphic);
 
-        // Place the point on the field, with x/y offset by the pane width (since the pane is larger than the image)
-        double paneOffsetX = (fieldPane.getWidth() - FieldConfig.fieldImageScaledWidth) / 2.0;
-        double paneOffsetY = (fieldPane.getHeight() - FieldConfig.fieldImageScaledHeight) / 2.0;
+        Point2D retval = FieldConfig.inchesToPixels(new Point2D(x, y), fieldPane);
 
-        // Scale the "inches" to pixels
-        double xPlacement = paneOffsetX + (x * FieldConfig.fieldImageScaledWidth / FieldConfig.LOADED_FIELD_WIDTH);
-        double yPlacement = paneOffsetY + (y * FieldConfig.fieldImageScaledHeight / FieldConfig.LOADED_FIELD_HEIGHT);
-
-        fieldGraphic = new Circle(xPlacement, yPlacement, POINT_RADIUS);
+        fieldGraphic = new Circle(retval.getX(), retval.getY(), POINT_RADIUS);
         fieldGraphic.fillProperty().set(Color.DARKORANGE);
         fieldGraphic.strokeProperty().set(Color.BLACK);
         fieldPane.getChildren().add(fieldGraphic);
@@ -153,4 +159,24 @@ public class PointItem extends HBox {
         fieldPane.getChildren().remove(fieldGraphic);
         fieldGraphic = null;
     }
+
+    @Override
+    public Point2D getStartPoint()
+    {
+        return new Point2D(x, y);
+    }
+
+    @Override
+    public Point2D getEndPoint()
+    {
+        return new Point2D(x, y);
+    }
+
+    @Override
+    public boolean isValid()
+    {
+        return (x >= 0 && x <= FieldConfig.LOADED_FIELD_WIDTH) && (y >= 0 && y <= FieldConfig.LOADED_FIELD_HEIGHT);
+    }
+
+
 }

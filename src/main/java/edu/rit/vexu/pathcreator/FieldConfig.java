@@ -3,14 +3,17 @@ package edu.rit.vexu.pathcreator;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -118,6 +121,19 @@ public class FieldConfig {
      */
     public static void setUpdateImageCallback(Consumer<Image> r) {
         updateImage = r;
+    }
+
+    public static Point2D inchesToPixels(Point2D pt_in, AnchorPane fieldPane)
+    {
+        // Place the point on the field, with x/y offset by the pane width (since the pane is larger than the image)
+        double paneOffsetX = (fieldPane.getWidth() - FieldConfig.fieldImageScaledWidth) / 2.0;
+        double paneOffsetY = (fieldPane.getHeight() - FieldConfig.fieldImageScaledHeight) / 2.0;
+
+        // Scale the "inches" to pixels
+        double xPlacement = paneOffsetX + (pt_in.getX() * FieldConfig.fieldImageScaledWidth / FieldConfig.LOADED_FIELD_WIDTH);
+        double yPlacement = paneOffsetY + (pt_in.getY() * FieldConfig.fieldImageScaledHeight / FieldConfig.LOADED_FIELD_HEIGHT);
+
+        return new Point2D(xPlacement, yPlacement);
     }
 
 }
