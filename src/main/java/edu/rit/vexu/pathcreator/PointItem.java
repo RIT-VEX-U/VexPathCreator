@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -33,6 +34,8 @@ public class PointItem extends HBox implements PathControl{
 
     private Circle fieldGraphic = null;
     private AnchorPane fieldPane;
+
+    private static Circle mouseFollower = new Circle(POINT_RADIUS);
 
     private double x = -1, y=-1;
 
@@ -113,29 +116,48 @@ public class PointItem extends HBox implements PathControl{
         // Choose to select the point on the field with the mouse cursor
         selBtn.addEventHandler(ActionEvent.ACTION, actionEvent ->
         {
+            // When the mouse is clicked / ESC pressed, remove the listeners / tmp circle
+            Runnable stopFollowing = () ->
+            {
+                fieldPane.getChildren().remove(mouseFollower);
+                fieldPane.setOnMouseMoved(null);
+                fieldPane.setOnMouseClicked(null);
+                fieldPane.setOnKeyPressed(null);
+            };
+
+            // Clear any previous click before continuing
+            stopFollowing.run();
+
             // Create a temporary circle that follows the mouse around to more accurately place it
-            Circle mouseCircle = new Circle(0,0, POINT_RADIUS);
-            mouseCircle.setFill(Color.DARKORANGE);
-            fieldPane.getChildren().add(mouseCircle);
+            mouseFollower.setFill(Color.DARKORANGE);
+            fieldPane.getChildren().add(mouseFollower);
 
             // Follow the mouse whenever it moves
             fieldPane.onMouseMovedProperty().set(mouseEvent ->
             {
-                mouseCircle.setCenterX(mouseEvent.getX());
-                mouseCircle.setCenterY(mouseEvent.getY());
+                mouseFollower.setCenterX(mouseEvent.getX());
+                mouseFollower.setCenterY(mouseEvent.getY());
             });
 
-            // When the mouse is clicked, save the point into the textfield and remove the listeners / tmp circle
+            // Only if clicked, save the point to the text fields
             fieldPane.onMouseClickedProperty().set(mouseEvent ->
             {
-                fieldPane.getChildren().remove(mouseCircle);
+
                 xText.textProperty().set(Double.toString(
                         mouseEvent.getX() * FieldConfig.LOADED_FIELD_WIDTH / FieldConfig.fieldImageScaledWidth));
                 yText.textProperty().set(Double.toString(
                         mouseEvent.getY() * FieldConfig.LOADED_FIELD_HEIGHT / FieldConfig.fieldImageScaledHeight));
 
-                fieldPane.setOnMouseMoved(null);
-                fieldPane.setOnMouseClicked(null);
+                stopFollowing.run();
+            });
+
+            fieldPane.requestFocus();
+
+            // If the escape key is pressed, stop the action
+            fieldPane.setOnKeyPressed(event ->
+            {
+                if(event.getCode().equals(KeyCode.ESCAPE))
+                    stopFollowing.run();
             });
 
         });

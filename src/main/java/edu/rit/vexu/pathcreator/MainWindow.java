@@ -92,8 +92,14 @@ public class MainWindow {
         // Create a new path, and handle the "remove path" button for each one
         addPathBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             PathItem pItem = new PathItem(imagePane);
-            pItem.setDeleteHandler(event -> list.remove(pItem));
+            pItem.setDeleteHandler(event ->
+            {
+                pItem.removeFromField();
+                list.remove(pItem);
+                drawFullPath();
+            });
             pItem.setSelectedHandler(event -> pointList.getSelectionModel().select(pItem));
+            pItem.addChangeListener((observableValue, o, t1) -> drawFullPath());
             list.add(pItem);
         });
 
@@ -184,6 +190,7 @@ public class MainWindow {
 
     private void drawFullPath()
     {
+        System.out.println("Redrawing...");
         for (int i = 0; i < lineList.size(); i++)
             if(imagePane.getChildren().contains(lineList.get(i)))
                 imagePane.getChildren().remove(lineList.get(i));

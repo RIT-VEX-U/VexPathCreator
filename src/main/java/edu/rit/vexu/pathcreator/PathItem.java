@@ -1,13 +1,18 @@
 package edu.rit.vexu.pathcreator;
 
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.util.Pair;
 
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * PathItem
@@ -28,6 +33,8 @@ public class PathItem extends VBox implements PathControl {
     private AnchorPane fieldPane;
 
     private int numHermitePoints = 0;
+
+    private ChangeListener changeListener = null;
 
     public enum Direction { UP, DOWN }
 
@@ -73,6 +80,7 @@ public class PathItem extends VBox implements PathControl {
                 numHermitePoints--;
                 resizeTree(root.isExpanded());
             });
+            hpItem.pointPart.addChangeListener(changeListener);
             root.getChildren().add(hpTreeItem);
 
             resizeTree(root.isExpanded());
@@ -158,19 +166,51 @@ public class PathItem extends VBox implements PathControl {
         return true;
     }
 
+    public void addChangeListener(ChangeListener l)
+    {
+        this.changeListener = l;
+        root.getChildren().addListener((ListChangeListener) change -> l.changed(null, null, null));
+    }
+
+    /**
+     * Removes the path and all it's points from the field
+     */
+    public void removeFromField()
+    {
+        for(TreeItem o : (ObservableList<TreeItem>)root.getChildren())
+            if(o.getValue() instanceof HermitePointItem)
+                ((TreeItem<HermitePointItem>)o).getValue().pointPart.removePointFromMap();
+    }
+
     @Override
     public boolean isValid() {
-        return false;
+        if(root.getChildren().size() <= 1)
+            return false;
+
+        boolean retVal = true;
+        for (Object pItem : root.getChildren())
+            if(pItem instanceof TreeItem && ((TreeItem) pItem).getValue() instanceof HermitePointItem)
+                retVal = retVal && ((TreeItem<HermitePointItem>)pItem).getValue().pointPart.isValid();
+
+        return retVal;
     }
 
     @Override
     public Point2D getStartPoint() {
-        return null;
+        if(root.getChildren().size() <= 1)
+            return null;
+
+        HermitePointItem startPt = ((TreeItem<HermitePointItem>)root.getChildren().get(1)).getValue();
+        return startPt.pointPart.getStartPoint();
     }
 
     @Override
     public Point2D getEndPoint() {
-        return null;
+        if(root.getChildren().size() <= 1)
+            return null;
+
+        HermitePointItem endPt = ((TreeItem<HermitePointItem>)root.getChildren().get(root.getChildren().size() - 1)).getValue();
+        return endPt.pointPart.getEndPoint();
     }
 
 }
