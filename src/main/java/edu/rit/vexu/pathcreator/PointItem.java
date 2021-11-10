@@ -1,6 +1,7 @@
 package edu.rit.vexu.pathcreator;
 
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -11,6 +12,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
+import java.util.EventListener;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A list item and point object on the field.
@@ -29,7 +34,7 @@ public class PointItem extends HBox implements PathControl{
     private Circle fieldGraphic = null;
     private AnchorPane fieldPane;
 
-    private int x = -1, y=-1;
+    private double x = -1, y=-1;
 
     /**
      * Create the point
@@ -64,11 +69,11 @@ public class PointItem extends HBox implements PathControl{
             boolean xValid = true, yValid = true;
 
             // Check inputs on the X textfield
-            try {  x = Integer.parseInt(xText.getText()); }
+            try {  x = Double.parseDouble(xText.getText()); }
             catch (NumberFormatException e) { xValid = false; }
 
             // Check inputs on the Y textfield
-            try{ y = Integer.parseInt(yText.getText()); }
+            try{ y = Double.parseDouble(yText.getText()); }
             catch(NumberFormatException e) { yValid = false; }
 
             // Make sure the X isn't larger than the field
@@ -104,6 +109,36 @@ public class PointItem extends HBox implements PathControl{
         fieldPane.widthProperty().addListener((v, n1, n2) -> placePointListener.changed(null, null, ""));
 
         delBtn.addEventHandler(ActionEvent.ACTION, actionEvent -> removePointFromMap());
+
+        // Choose to select the point on the field with the mouse cursor
+        selBtn.addEventHandler(ActionEvent.ACTION, actionEvent ->
+        {
+            // Create a temporary circle that follows the mouse around to more accurately place it
+            Circle mouseCircle = new Circle(0,0, POINT_RADIUS);
+            mouseCircle.setFill(Color.DARKORANGE);
+            fieldPane.getChildren().add(mouseCircle);
+
+            // Follow the mouse whenever it moves
+            fieldPane.onMouseMovedProperty().set(mouseEvent ->
+            {
+                mouseCircle.setCenterX(mouseEvent.getX());
+                mouseCircle.setCenterY(mouseEvent.getY());
+            });
+
+            // When the mouse is clicked, save the point into the textfield and remove the listeners / tmp circle
+            fieldPane.onMouseClickedProperty().set(mouseEvent ->
+            {
+                fieldPane.getChildren().remove(mouseCircle);
+                xText.textProperty().set(Double.toString(
+                        mouseEvent.getX() * FieldConfig.LOADED_FIELD_WIDTH / FieldConfig.fieldImageScaledWidth));
+                yText.textProperty().set(Double.toString(
+                        mouseEvent.getY() * FieldConfig.LOADED_FIELD_HEIGHT / FieldConfig.fieldImageScaledHeight));
+
+                fieldPane.setOnMouseMoved(null);
+                fieldPane.setOnMouseClicked(null);
+            });
+
+        });
     }
 
     /**
@@ -134,7 +169,7 @@ public class PointItem extends HBox implements PathControl{
      * @param x inches
      * @param y inches
      */
-    public void placePointOnMap(int x, int y)
+    public void placePointOnMap(double x, double y)
     {
         // If the circle already exists, remove it and re-add it
         if(fieldGraphic != null || fieldPane.getChildren().contains(fieldGraphic))
