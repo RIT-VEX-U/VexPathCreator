@@ -4,6 +4,8 @@ import javafx.scene.shape.CubicCurve;
 
 /**
  * The HermiteCurve class defines a cubic Hermite parametric curve segment in (x,y) coordinate space.
+ *
+ * @author Jacob To
  */
 public class HermiteCurve extends CubicCurve {
     /**
@@ -55,6 +57,42 @@ public class HermiteCurve extends CubicCurve {
      */
     public double getEndMag() {
         return 3 * Math.sqrt(Math.pow(getEndX() - getControlX2(), 2) + Math.pow(getEndY() - getControlY2(), 2));
+    }
+
+    /**
+     * Set the start tangential angle to a value.
+     * @param startAngle The desired start tangential angle.
+     */
+    public void setStartAngle(double startAngle) {
+        setControlX1(getStartMag() * Math.cos(startAngle) / 3 + getStartX());
+        setControlY1(getStartMag() * Math.sin(startAngle) / 3 + getStartY());
+    }
+
+    /**
+     * Set the start tangential magnitude to a value.
+     * @param startMag The desired start tangential magnitude.
+     */
+    public void setStartMag(double startMag) {
+        setControlX1(startMag * Math.cos(getStartAngle()) / 3 + getStartX());
+        setControlY1(startMag * Math.sin(getStartAngle()) / 3 + getStartY());
+    }
+
+    /**
+     * Set the end tangential angle to a value.
+     * @param endAngle The desired start tangential angle.
+     */
+    public void setEndAngle(double endAngle) {
+        setControlX2(-getEndMag() * Math.cos(endAngle) / 3 + getEndX());
+        setControlY2(-getEndMag() * Math.sin(endAngle) / 3 + getEndY());
+    }
+
+    /**
+     * Set the end tangential magnitude to a value.
+     * @param endMag The desired end tangential magnitude.
+     */
+    public void setEndMag(double endMag) {
+        setControlX2(-endMag * Math.cos(getEndAngle()) / 3 + getEndX());
+        setControlY2(-endMag * Math.sin(getEndAngle()) / 3 + getEndY());
     }
 
     /**
