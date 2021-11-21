@@ -123,6 +123,30 @@ public class FieldConfig {
         updateImage = r;
     }
 
+    /**
+     * Convert pixels from the anchorpane containing the field image to inches, based on the
+     * saved official height of the field (in inches) and the current size of the image.
+     * @param pt_in The pixels, referenced to the field image pane
+     * @param fieldPane The field image pane
+     * @return The new point, in inches
+     */
+    public static Point2D pixelsToInches(Point2D pt_in, AnchorPane fieldPane)
+    {
+        double paneOffsetX = (fieldPane.getWidth() - fieldImageScaledWidth) / 2.0;
+        double paneOffsetY = (fieldPane.getHeight() - fieldImageScaledHeight) / 2.0;
+
+        double xInches = (LOADED_FIELD_WIDTH / fieldImageScaledWidth) * (pt_in.getX() - paneOffsetX);
+        double yInches = (LOADED_FIELD_HEIGHT / fieldImageScaledHeight) * (pt_in.getY() - paneOffsetY);
+
+        return new Point2D(xInches, yInches);
+    }
+
+    /**
+     * Convert inches on the field to pixels in reference to the field image pane
+     * @param pt_in The point in inches
+     * @param fieldPane The field image pane
+     * @return The point in pixels
+     */
     public static Point2D inchesToPixels(Point2D pt_in, AnchorPane fieldPane)
     {
         // Place the point on the field, with x/y offset by the pane width (since the pane is larger than the image)

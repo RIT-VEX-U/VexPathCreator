@@ -142,11 +142,10 @@ public class PointItem extends HBox implements PathControl{
             // Only if clicked, save the point to the text fields
             fieldPane.onMouseClickedProperty().set(mouseEvent ->
             {
+                Point2D selectedInches = FieldConfig.pixelsToInches(new Point2D(mouseEvent.getX(), mouseEvent.getY()), fieldPane);
 
-                xText.textProperty().set(Double.toString(
-                        mouseEvent.getX() * FieldConfig.LOADED_FIELD_WIDTH / FieldConfig.fieldImageScaledWidth));
-                yText.textProperty().set(Double.toString(
-                        mouseEvent.getY() * FieldConfig.LOADED_FIELD_HEIGHT / FieldConfig.fieldImageScaledHeight));
+                xText.textProperty().set(Double.toString(selectedInches.getX()));
+                yText.textProperty().set(Double.toString(selectedInches.getY()));
 
                 stopFollowing.run();
             });
