@@ -1,11 +1,15 @@
 package edu.rit.vexu.pathcreator;
 
+import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Pair;
+
+import java.util.Vector;
 
 public class HermitePointItem extends VBox {
 
@@ -32,6 +36,38 @@ public class HermitePointItem extends VBox {
 
         super.getChildren().addAll(pointPart, vecPart);
 
+    }
+
+    public void addChangeListener(ChangeListener c)
+    {
+        pointPart.addChangeListener(c);
+        magField.textProperty().addListener(c);
+        angleField.textProperty().addListener(c);
+    }
+
+    public double getDir()
+    {
+        return Double.parseDouble(angleField.getText());
+    }
+
+    public double getMag()
+    {
+        return Double.parseDouble(magField.getText());
+    }
+
+    public boolean isValid() {
+
+        boolean isVecValid = true;
+        try
+        {
+            Double.parseDouble(magField.getText());
+            Double.parseDouble(angleField.getText());
+        } catch(NumberFormatException e)
+        {
+            isVecValid = false;
+        }
+
+        return pointPart.isValid() && isVecValid;
     }
 
     /**

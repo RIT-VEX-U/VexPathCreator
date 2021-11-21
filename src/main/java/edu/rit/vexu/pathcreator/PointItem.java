@@ -216,6 +216,8 @@ public class PointItem extends HBox implements PathControl{
         fieldGraphic = null;
     }
 
+    public Point2D getPoint() {return new Point2D(x, y);}
+
     @Override
     public Point2D getStartPoint()
     {

@@ -9,9 +9,12 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
+import java.lang.reflect.Array;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,6 +70,9 @@ public class PathItem extends VBox implements PathControl {
         // Listen for changes in height (aka expanding the tree), and adjust the height accordingly
         root.expandedProperty().addListener((observableValue, aBoolean, t1) -> resizeTree(t1));
 
+        fieldPane.heightProperty().addListener((observableValue, number, t1) -> drawPath());
+        fieldPane.widthProperty().addListener((observableValue, number, t1) -> drawPath());
+
         // Button Controls
         // "New Hermite Point"
         mkPointBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent ->
@@ -80,6 +86,7 @@ public class PathItem extends VBox implements PathControl {
                 numHermitePoints--;
                 resizeTree(root.isExpanded());
             });
+            hpItem.addChangeListener((observableValue, o, t1) -> drawPath());
             hpItem.pointPart.addChangeListener(changeListener);
             root.getChildren().add(hpTreeItem);
 
@@ -180,6 +187,42 @@ public class PathItem extends VBox implements PathControl {
         for(TreeItem o : (ObservableList<TreeItem>)root.getChildren())
             if(o.getValue() instanceof HermitePointItem)
                 ((TreeItem<HermitePointItem>)o).getValue().pointPart.removePointFromMap();
+    }
+
+    public void drawPath()
+    {
+        HermitePointItem[] pointList = new HermitePointItem[root.getChildren().size() - 1];
+        for(int i = 1; i < root.getChildren().size(); i++)
+            pointList[i - 1] = ((TreeItem<HermitePointItem>) root.getChildren().get(i)).getValue();
+
+        fieldPane.getChildren().removeIf(node -> node instanceof HermiteCurve);
+
+        for (int i = 0; i < pointList.length - 1; i++) {
+            if(!pointList[i].isValid() || !pointList[i+1].isValid())
+                continue;
+
+            Point2D start = FieldConfig.inchesToPixels(pointList[i].pointPart.getPoint(), fieldPane);
+            Point2D end = FieldConfig.inchesToPixels(pointList[i + 1].pointPart.getPoint(), fieldPane);
+
+            HermiteCurve hc = new HermiteCurve(
+                    // Point 1
+                    start.getX(),
+                    start.getY(),
+                    Math.toRadians(pointList[i].getDir()),
+                    pointList[i].getMag() * (FieldConfig.fieldImageScaledWidth / FieldConfig.LOADED_FIELD_WIDTH),
+                    // Point 2
+                    end.getX(),
+                    end.getY(),
+                    Math.toRadians(pointList[i + 1].getDir()),
+                    pointList[i + 1].getMag() * (FieldConfig.fieldImageScaledWidth / FieldConfig.LOADED_FIELD_WIDTH)
+            );
+
+            hc.setFill(Color.TRANSPARENT);
+            hc.setStroke(Color.DARKORANGE);
+            hc.setStrokeWidth(4);
+
+            fieldPane.getChildren().add(hc);
+        }
     }
 
     @Override
